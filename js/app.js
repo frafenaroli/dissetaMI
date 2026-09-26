@@ -1,29 +1,158 @@
-/* DissetaMi: mappa di vedovelle e case dell'acqua di Milano. Nessuna build, solo Leaflet. */
+/* DissetaMI: mappa di vedovelle e case dell'acqua di Milano. Nessuna build, solo Leaflet. */
 (function () {
   'use strict';
 
   const MILANO = [45.4642, 9.19];
   const BBOX_MILANO = '9.03,45.56,9.30,45.35'; // viewbox Nominatim: ovest,nord,est,sud
-  const TIPI = {
-    vedovelle: { nome: 'Vedovella', plurale: 'Vedovelle', colore: '#1f6f43' },
-    case: { nome: "Casa dell'acqua", plurale: "Case dell'acqua", colore: '#1668c7' },
+  const COLORI = { vedovelle: '#2f8f5b', case: '#3b6fd6' };
+  const TIPI = Object.keys(COLORI);
+  // Contenuti della finestra "Scopri di più e FAQ", per scheda.
+  const SCOPRI = {
+    vedovelle: { desc: 'ved.desc', curiosita: ['nome', 'dito', 'aperte', 'verde'], faq: ['v1', 'v2', 'v3', 'v4'] },
+    case: { desc: 'case.desc', curiosita: ['stessa', 'plastica'], faq: ['c1', 'c2', 'c3', 'c4'] },
+    info: { desc: 'intro', curiosita: ['falda'], faq: ['s1', 's2', 's3', 's4'] },
   };
 
   const $ = (id) => document.getElementById(id);
-  const stato = { dati: null, livelli: {}, io: null, pinIo: null, pinCerca: null, selezionato: null, evidenza: null };
+  const SPRITE = 'vendor/lucide/sprite.svg#';
+  const stato = { dati: null, livelli: {}, io: null, pinIo: null, pinCerca: null, selezionato: null, evidenza: null, tabScopri: 'vedovelle' };
 
-  /* ---------- Navigazione tra Mappa e Scopri ---------- */
-  function mostraVista() {
-    const scheda = location.hash === '#scopri' ? 'scopri' : 'mappa';
-    $('vista-mappa').hidden = scheda !== 'mappa';
-    $('vista-scopri').hidden = scheda !== 'scopri';
-    document.querySelectorAll('.tabs a').forEach((a) => {
-      if (a.dataset.tab === scheda) a.setAttribute('aria-current', 'page');
-      else a.removeAttribute('aria-current');
-    });
-    if (scheda === 'mappa' && mappa) setTimeout(() => mappa.invalidateSize(), 0);
+  function icona(nome, size) {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'ico');
+    svg.setAttribute('width', size);
+    svg.setAttribute('height', size);
+    svg.setAttribute('aria-hidden', 'true');
+    const use = document.createElementNS(ns, 'use');
+    use.setAttribute('href', SPRITE + nome);
+    svg.appendChild(use);
+    return svg;
   }
-  window.addEventListener('hashchange', mostraVista);
+
+  /* ---------- Lingua ---------- */
+  let lingua = (() => {
+    try { const s = localStorage.getItem('dissetami-lingua'); if (s === 'it' || s === 'en') return s; } catch (e) { /* storage non disponibile */ }
+    return (navigator.language || 'it').toLowerCase().startsWith('it') ? 'it' : 'en';
+  })();
+
+  function t(chiave, valori) {
+    let s = (TESTI[lingua] && TESTI[lingua][chiave]) || TESTI.it[chiave] || chiave;
+    if (valori) Object.keys(valori).forEach((k) => { s = s.replace('{' + k + '}', valori[k]); });
+    return s;
+  }
+
+  function applicaLingua() {
+    document.documentElement.lang = lingua;
+    document.title = t('meta.title');
+    document.querySelector('meta[name="description"]').setAttribute('content', t('meta.desc'));
+    document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll('[data-i18n-ph]').forEach((el) => { el.placeholder = t(el.dataset.i18nPh); });
+    document.querySelectorAll('[data-i18n-aria]').forEach((el) => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
+    document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t(el.dataset.i18nTitle); });
+    document.querySelectorAll('.lingua [data-l]').forEach((el) => el.setAttribute('aria-pressed', el.dataset.l === lingua));
+    document.querySelector('.lingua').dataset.attiva = lingua;
+    aggiornaSchermo();
+    disegnaScopri();
+    disegnaFooter();
+    if (stato.selezionato) apriScheda(stato.selezionato.punto, stato.selezionato.tipo, stato.selezionato.origine);
+    $('suggerimenti').hidden = true;
+  }
+
+  document.querySelectorAll('.lingua [data-l]').forEach((btn) => btn.addEventListener('click', () => {
+    if (btn.dataset.l === lingua) return;
+    lingua = btn.dataset.l;
+    try { localStorage.setItem('dissetami-lingua', lingua); } catch (e) { /* storage non disponibile */ }
+    applicaLingua();
+  }));
+
+  function badge(tipo) {
+    const b = document.createElement('span');
+    b.className = 'badge badge-' + tipo;
+    b.textContent = t('plurale.' + tipo);
+    return b;
+  }
+
+  /* ---------- Finestra "Scopri di più e FAQ" ---------- */
+  function disegnaScopri() {
+    const tab = stato.tabScopri;
+    const c = SCOPRI[tab];
+    document.querySelectorAll('#scopri-tabs [role="tab"]').forEach((b) => {
+      const attiva = b.dataset.tab === tab;
+      b.setAttribute('aria-selected', attiva);
+      b.tabIndex = attiva ? 0 : -1;
+    });
+    const corpo = $('scopri-corpo');
+    corpo.className = 'popup-content scopri-corpo tab-' + tab;
+    corpo.innerHTML = '';
+
+    const desc = document.createElement('p');
+    desc.className = 'scopri-desc';
+    desc.textContent = t(c.desc);
+    corpo.appendChild(desc);
+
+    const h1 = document.createElement('h3');
+    h1.className = 'scopri-sez';
+    h1.append(icona('sparkles', 14), t('sez.curiosita'));
+    const lista = document.createElement('ul');
+    lista.className = 'curiosita';
+    c.curiosita.forEach((k) => {
+      const li = document.createElement('li');
+      const b = document.createElement('b');
+      b.textContent = t(`an.${k}.t`);
+      const p = document.createElement('span');
+      p.textContent = t(`an.${k}.d`);
+      li.append(b, p);
+      lista.appendChild(li);
+    });
+    corpo.append(h1, lista);
+
+    const h2 = document.createElement('h3');
+    h2.className = 'scopri-sez';
+    h2.append(icona('circle-help', 14), t('sez.faq'));
+    corpo.appendChild(h2);
+    c.faq.forEach((id) => {
+      const d = document.createElement('details');
+      const s = document.createElement('summary');
+      s.append(document.createTextNode(t(`faq.${id}.q`)), icona('chevron-down', 18));
+      const p = document.createElement('p');
+      p.innerHTML = t(`faq.${id}.a`); // testi nostri, possono contenere link
+      d.append(s, p);
+      corpo.appendChild(d);
+    });
+  }
+
+  function apriScopri(tab) {
+    if (tab) stato.tabScopri = tab;
+    disegnaScopri();
+    $('scopri').hidden = false;
+    $('scopri').querySelector('.popup').scrollTop = 0;
+    $('scopri-chiudi').focus();
+  }
+  function chiudiScopri() { $('scopri').hidden = true; }
+
+  $('btn-scopri').addEventListener('click', () => apriScopri());
+  $('scopri-chiudi').addEventListener('click', chiudiScopri);
+  $('scopri').addEventListener('click', (e) => { if (e.target === $('scopri')) chiudiScopri(); });
+  $('scopri-tabs').addEventListener('click', (e) => {
+    const b = e.target.closest('[role="tab"]');
+    if (b) { stato.tabScopri = b.dataset.tab; disegnaScopri(); }
+  });
+  $('scopri-tabs').addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    const tabs = Object.keys(SCOPRI);
+    const i = (tabs.indexOf(stato.tabScopri) + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+    stato.tabScopri = tabs[i];
+    disegnaScopri();
+    $('scopri-tabs').querySelector(`[data-tab="${tabs[i]}"]`).focus();
+  });
+
+  function disegnaFooter() {
+    const agg = stato.dati && stato.dati.aggiornato;
+    if (!agg) { $('footer-dati').textContent = t('footer.datiSenzaData'); return; }
+    const data = new Date(agg + 'T12:00:00').toLocaleDateString(lingua === 'it' ? 'it-IT' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    $('footer-dati').textContent = t('footer.dati', { data });
+  }
 
   /* ---------- Mappa ---------- */
   const mappa = L.map('map', {
@@ -31,16 +160,53 @@
     preferCanvas: true, renderer: L.canvas({ tolerance: 8 }),
     maxBounds: [[45.25, 8.9], [45.65, 9.45]],
   });
-  L.control.zoom({ position: 'bottomleft' }).addTo(mappa);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · Dati © Comune di Milano',
+  L.control.zoom({ position: 'bottomright' }).addTo(mappa);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19, subdomains: 'abcd',
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>',
   }).addTo(mappa);
-  mostraVista();
 
-  function stile(tipo) {
-    return { radius: 7, color: '#fff', weight: 2, fillColor: TIPI[tipo].colore, fillOpacity: 1 };
+  /* ---------- Mappa a tutto schermo ----------
+   * La classe CSS rende la mappa fissa su tutto il viewport (funziona anche su iPhone);
+   * dove il browser lo consente si chiede anche il vero schermo intero, per nascondere le barre. */
+  const card = $('mappa');
+  const inSchermoIntero = () => card.classList.contains('schermo-intero');
+  function aggiornaSchermo() {
+    const on = inSchermoIntero();
+    const btn = $('btn-schermo');
+    btn.querySelector('use').setAttribute('href', SPRITE + (on ? 'minimize-2' : 'maximize-2'));
+    btn.setAttribute('aria-label', t(on ? 'btn.esciSchermo' : 'btn.schermoIntero'));
+    btn.title = btn.getAttribute('aria-label');
+    btn.setAttribute('aria-pressed', on);
   }
+  function impostaSchermo(on) {
+    card.classList.toggle('schermo-intero', on);
+    document.body.classList.toggle('bloccato', on);
+    aggiornaSchermo();
+    setTimeout(() => mappa.invalidateSize(), 50);
+  }
+  function entraSchermoIntero() {
+    impostaSchermo(true);
+    const root = document.documentElement;
+    if (root.requestFullscreen && !document.fullscreenElement) root.requestFullscreen().catch(() => {});
+  }
+  function esciSchermoIntero() {
+    impostaSchermo(false);
+    if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+  }
+  $('btn-schermo').addEventListener('click', () => (inSchermoIntero() ? esciSchermoIntero() : entraSchermoIntero()));
+  document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement && inSchermoIntero()) impostaSchermo(false);
+  });
+
+  // Punti più piccoli quando la mappa è lontana, per non coprire tutta la città.
+  const raggio = () => (mappa.getZoom() < 14 ? 5 : 7);
+  function stile(tipo) {
+    return { radius: raggio(), color: '#fff', weight: raggio() < 7 ? 1.5 : 2, fillColor: COLORI[tipo], fillOpacity: 1 };
+  }
+  mappa.on('zoomend', () => {
+    TIPI.forEach((tipo) => stato.livelli[tipo] && stato.livelli[tipo].eachLayer((l) => l.setStyle(stile(tipo))));
+  });
 
   /* ---------- Utilità ---------- */
   function distanza(a, b) { // metri, formula dell'emisenoverso
@@ -51,38 +217,53 @@
   }
   function formatDistanza(m) {
     if (m < 1000) return `${Math.round(m / 10) * 10} m`;
-    return `${(m / 1000).toFixed(1).replace('.', ',')} km`;
+    const km = (m / 1000).toFixed(1);
+    return `${lingua === 'it' ? km.replace('.', ',') : km} km`;
   }
   function minutiAPiedi(m) { return Math.max(1, Math.round(m / 80)); } // ~4,8 km/h
-  function tipiAttivi() { return Object.keys(TIPI).filter((t) => $('f-' + t).checked); }
+  function tipiAttivi() { return TIPI.filter((tp) => $('f-' + tp).checked); }
 
   let timerAvviso;
-  function avviso(testo, ms = 4000) {
+  function avviso(chiave, ms = 4500) {
     const el = $('avviso');
-    el.textContent = testo;
+    el.textContent = t(chiave);
     el.hidden = false;
     clearTimeout(timerAvviso);
     timerAvviso = setTimeout(() => { el.hidden = true; }, ms);
   }
+  function vaiAllaMappa() {
+    if (inSchermoIntero()) return;
+    const r = $('mappa').getBoundingClientRect();
+    if (r.top < 0 || r.bottom > window.innerHeight) $('mappa').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 
   /* ---------- Scheda del punto ---------- */
   function apriScheda(punto, tipo, origine) {
-    stato.selezionato = { punto, tipo };
-    const t = TIPI[tipo];
-    const tipoEl = $('scheda-tipo');
-    tipoEl.textContent = t.nome;
-    tipoEl.className = 'scheda-tipo ' + tipo;
-    $('scheda-titolo').textContent = punto.nil || 'Milano';
+    stato.selezionato = { punto, tipo, origine };
+    const popup = document.querySelector('.popup');
+    popup.className = 'popup ' + tipo;
 
-    const parti = [];
-    if (punto.mun) parti.push('Municipio ' + punto.mun);
-    if (punto.cap) parti.push(punto.cap + ' Milano');
+    const tags = $('scheda-tags');
+    tags.innerHTML = '';
+    const b = badge(tipo);
+    b.textContent = t('tipo.' + tipo);
+    tags.appendChild(b);
+    if (punto.mun) {
+      const m = document.createElement('span');
+      m.className = 'badge badge-neutro';
+      m.textContent = t('scheda.municipio', { n: punto.mun });
+      tags.appendChild(m);
+    }
+    $('scheda-titolo').textContent = punto.nil || 'Milano';
+    $('scheda-luogo').querySelector('span').textContent = [punto.cap, 'Milano'].filter(Boolean).join(' ');
+
     const da = origine || stato.io;
+    const rigaDist = $('scheda-distanza');
     if (da) {
       const d = distanza(da, punto);
-      parti.push(`${formatDistanza(d)} · circa ${minutiAPiedi(d)} min a piedi` + (origine ? " dall'indirizzo cercato" : ''));
-    }
-    $('scheda-info').textContent = parti.join(' · ');
+      rigaDist.querySelector('span').textContent = t(origine ? 'scheda.daCercato' : 'scheda.distanza', { d: formatDistanza(d), m: minutiAPiedi(d) });
+      rigaDist.hidden = false;
+    } else rigaDist.hidden = true;
 
     const dest = `${punto.lat},${punto.lng}`;
     $('scheda-indicazioni').href = `https://www.google.com/maps/dir/?api=1&destination=${dest}&travelmode=walking`;
@@ -91,7 +272,7 @@
 
     if (stato.evidenza) stato.evidenza.remove();
     stato.evidenza = L.circleMarker([punto.lat, punto.lng], {
-      radius: 13, color: t.colore, weight: 3, fill: false, interactive: false,
+      radius: 13, color: COLORI[tipo], weight: 3, fill: false, interactive: false,
     }).addTo(mappa);
   }
   function chiudiScheda() {
@@ -100,7 +281,13 @@
     if (stato.evidenza) { stato.evidenza.remove(); stato.evidenza = null; }
   }
   $('scheda-chiudi').addEventListener('click', chiudiScheda);
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') chiudiScheda(); });
+  $('scheda').addEventListener('click', (e) => { if (e.target === $('scheda')) chiudiScheda(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (!$('scheda').hidden) chiudiScheda();
+    else if (!$('scopri').hidden) chiudiScopri();
+    else if (inSchermoIntero()) esciSchermoIntero();
+  });
 
   /* ---------- Dati ---------- */
   function caricaDati() {
@@ -108,36 +295,27 @@
       .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then((dati) => {
         stato.dati = dati;
-        Object.keys(TIPI).forEach((tipo) => {
+        TIPI.forEach((tipo) => {
           const punti = dati[tipo] || [];
           const livello = L.layerGroup(punti.map((p) =>
-            L.circleMarker([p.lat, p.lng], stile(tipo))
-              .on('click', () => apriScheda(p, tipo))
+            L.circleMarker([p.lat, p.lng], stile(tipo)).on('click', () => apriScheda(p, tipo))
           ));
           stato.livelli[tipo] = livello;
           if ($('f-' + tipo).checked) livello.addTo(mappa);
-          $('n-' + tipo).textContent = punti.length ? punti.length : '';
+          $('n-' + tipo).textContent = punti.length || '';
         });
-        if (dati.aggiornato) {
-          const d = new Date(dati.aggiornato + 'T12:00:00');
-          $('info-aggiornamento').textContent = 'Ultimo aggiornamento: ' +
-            d.toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' }) + '.';
-        }
-        const totale = Object.keys(TIPI).reduce((n, t) => n + (dati[t] || []).length, 0);
-        if (!totale) avviso('I dati non sono ancora disponibili.', 6000);
+        disegnaFooter();
+        if (!TIPI.some((tp) => (dati[tp] || []).length)) avviso('avviso.noDati', 6000);
       })
-      .catch(() => avviso('Impossibile caricare i dati. Riprova più tardi.', 6000));
+      .catch(() => avviso('avviso.errDati', 6000));
   }
 
-  Object.keys(TIPI).forEach((tipo) => {
+  TIPI.forEach((tipo) => {
     $('f-' + tipo).addEventListener('change', (e) => {
       const livello = stato.livelli[tipo];
       if (!livello) return;
       if (e.target.checked) livello.addTo(mappa);
-      else {
-        livello.remove();
-        if (stato.selezionato && stato.selezionato.tipo === tipo) chiudiScheda();
-      }
+      else livello.remove();
     });
   });
 
@@ -154,11 +332,11 @@
 
   function mostraPiuVicino(da, origine) {
     if (!stato.dati) return;
-    if (!tipiAttivi().length) { avviso('Seleziona almeno una categoria.'); return; }
+    vaiAllaMappa();
+    if (!tipiAttivi().length) { avviso('avviso.categoria'); return; }
     const v = piuVicino(da);
-    if (!v) { avviso('Nessun punto disponibile.'); return; }
-    // Spazio per la barra di ricerca in alto e per la scheda in basso.
-    mappa.fitBounds(L.latLngBounds([da, v.p]), { maxZoom: 17, paddingTopLeft: [40, 140], paddingBottomRight: [40, 260] });
+    if (!v) { avviso('avviso.nessunPunto'); return; }
+    mappa.fitBounds(L.latLngBounds([da, v.p]), { maxZoom: 17, padding: [60, 60] });
     apriScheda(v.p, v.tipo, origine);
   }
 
@@ -184,19 +362,16 @@
     });
   }
   function erroreGeo(err) {
-    const msg = err && err.code === 1
-      ? 'Posizione non consentita: cerca un indirizzo per trovare il punto più vicino.'
-      : 'Posizione non disponibile: cerca un indirizzo per trovare il punto più vicino.';
-    avviso(msg, 6000);
-    $('cerca-input').focus();
+    vaiAllaMappa();
+    avviso(err && err.code === 1 ? 'avviso.geoNegata' : 'avviso.geoNo', 6000);
   }
 
   $('btn-posizione').addEventListener('click', () => {
     localizza().then((io) => mappa.setView([io.lat, io.lng], 16)).catch(erroreGeo);
   });
-  $('btn-vicina').addEventListener('click', () => {
+  ['btn-vicina', 'btn-vicina-mappa'].forEach((id) => $(id).addEventListener('click', () => {
     localizza().then((io) => mostraPiuVicino(io)).catch(erroreGeo);
-  });
+  }));
 
   /* ---------- Ricerca ---------- */
   const input = $('cerca-input');
@@ -211,13 +386,13 @@
   function quartieri(q) {
     if (!stato.dati || q.length < 2) return [];
     const nq = normalizza(q);
-    const mappaNil = new Map();
-    Object.keys(TIPI).forEach((tipo) => (stato.dati[tipo] || []).forEach((p) => {
+    const perNil = new Map();
+    TIPI.forEach((tipo) => (stato.dati[tipo] || []).forEach((p) => {
       if (!p.nil) return;
-      if (!mappaNil.has(p.nil)) mappaNil.set(p.nil, []);
-      mappaNil.get(p.nil).push(p);
+      if (!perNil.has(p.nil)) perNil.set(p.nil, []);
+      perNil.get(p.nil).push(p);
     }));
-    return [...mappaNil.entries()]
+    return [...perNil.entries()]
       .filter(([nome]) => normalizza(nome).includes(nq))
       .slice(0, 5)
       .map(([nome, punti]) => ({ tipo: 'quartiere', nome, punti }));
@@ -229,23 +404,22 @@
     lista.innerHTML = '';
     let sezione = null;
     voci.forEach((v, i) => {
-      const s = v.tipo === 'quartiere' ? 'Quartieri' : 'Indirizzi';
+      const s = v.tipo === 'quartiere' ? 'sugg.quartieri' : 'sugg.indirizzi';
       if (s !== sezione) {
         sezione = s;
-        const t = document.createElement('li');
-        t.className = 'titolo';
-        t.textContent = s;
-        lista.appendChild(t);
+        const titolo = document.createElement('li');
+        titolo.className = 'titolo';
+        titolo.textContent = t(s);
+        lista.appendChild(titolo);
       }
       const li = document.createElement('li');
       li.setAttribute('role', 'option');
-      li.dataset.i = i;
       const nome = document.createElement('span');
       nome.textContent = v.nome;
       li.appendChild(nome);
       if (v.punti) {
         const n = document.createElement('small');
-        n.textContent = v.punti.length === 1 ? '1 punto' : `${v.punti.length} punti`;
+        n.textContent = v.punti.length === 1 ? t('sugg.punto') : t('sugg.punti', { n: v.punti.length });
         li.appendChild(n);
       }
       li.addEventListener('mousedown', (e) => { e.preventDefault(); scegli(i); });
@@ -254,7 +428,7 @@
     if (messaggio) {
       const li = document.createElement('li');
       li.className = 'titolo';
-      li.textContent = messaggio;
+      li.textContent = t(messaggio);
       lista.appendChild(li);
     }
     lista.hidden = !voci.length && !messaggio;
@@ -268,7 +442,8 @@
     input.blur();
     if (v.tipo === 'quartiere') {
       chiudiScheda();
-      mappa.fitBounds(L.latLngBounds(v.punti.map((p) => [p.lat, p.lng])).pad(0.25), { maxZoom: 17 });
+      vaiAllaMappa();
+      mappa.fitBounds(L.latLngBounds(v.punti.map((p) => [p.lat, p.lng])), { maxZoom: 17, padding: [40, 40] });
       return;
     }
     const pos = { lat: v.lat, lng: v.lng };
@@ -283,8 +458,7 @@
 
   input.addEventListener('input', () => {
     const q = input.value.trim();
-    const voci = quartieri(q);
-    disegnaLista(voci, q.length >= 3 ? 'Premi Invio per cercare l’indirizzo' : null);
+    disegnaLista(quartieri(q), q.length >= 3 ? 'sugg.invio' : null);
   });
   input.addEventListener('keydown', (e) => {
     const opzioni = lista.querySelectorAll('[role="option"]');
@@ -308,8 +482,8 @@
     const locali = quartieri(q);
     if (controllore) controllore.abort();
     controllore = new AbortController();
-    disegnaLista(locali, 'Cerco…');
-    const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&bounded=1&accept-language=it' +
+    disegnaLista(locali, 'sugg.cerco');
+    const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&bounded=1&accept-language=' + lingua +
       '&viewbox=' + BBOX_MILANO + '&q=' + encodeURIComponent(q + ', Milano');
     fetch(url, { signal: controllore.signal })
       .then((r) => r.json())
@@ -321,14 +495,15 @@
         }));
         const voci = locali.concat(indirizzi);
         if (voci.length === 1) { disegnaLista(voci); scegli(0); return; }
-        disegnaLista(voci, voci.length ? null : 'Nessun risultato a Milano');
+        disegnaLista(voci, voci.length ? null : 'sugg.nessuno');
       })
       .catch((err) => {
-        if (err.name !== 'AbortError') disegnaLista(locali, 'Ricerca indirizzi non disponibile offline');
+        if (err.name !== 'AbortError') disegnaLista(locali, 'sugg.offline');
       });
   });
 
   /* ---------- Avvio ---------- */
+  applicaLingua();
   caricaDati();
 
   if ('serviceWorker' in navigator) {

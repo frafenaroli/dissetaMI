@@ -7,7 +7,7 @@ description: >-
   "scarica i dati nuovi dal Comune".
 ---
 
-# Aggiorna i dati di DissetaMi
+# Aggiorna i dati di DissetaMI
 
 Il sito legge `data/punti.json`. Lo script `scripts/aggiorna_dati.py` lo rigenera
 dai due dataset del Comune di Milano (aggiornati dal Comune ogni settimana):

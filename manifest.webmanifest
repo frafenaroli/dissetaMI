@@ -1,6 +1,6 @@
 {
-  "name": "DissetaMi · Vedovelle e case dell'acqua di Milano",
-  "short_name": "DissetaMi",
+  "name": "DissetaMI · Vedovelle e case dell'acqua di Milano",
+  "short_name": "DissetaMI",
   "description": "Trova la vedovella o la casa dell'acqua più vicina a Milano.",
   "lang": "it",
   "dir": "ltr",
@@ -8,8 +8,8 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f4f6f3",
-  "theme_color": "#1f6f43",
+  "background_color": "#f6f1ea",
+  "theme_color": "#f6f1ea",
   "categories": ["travel", "navigation", "lifestyle"],
   "icons": [
     { "src": "./icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },

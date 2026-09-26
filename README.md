@@ -1,17 +1,19 @@
-# DissetaMi
+# DissetaMI
 
 Una mappa interattiva di vedovelle e case dell'acqua di Milano.
 
 - Trova il punto più vicino con la geolocalizzazione, oppure cercando un indirizzo o un quartiere.
 - Apri le indicazioni a piedi in Google Maps.
-- Leggi curiosità e FAQ nella sezione **Scopri**.
+- Leggi curiosità e FAQ nella finestra "Scopri di più e FAQ".
+- Allarga la mappa a tutto schermo.
 - Si installa come app (PWA) e i punti restano consultabili offline.
+- In italiano e in inglese (testi in `js/i18n.js`).
 
-Dati: open data del Comune di Milano ([vedovelle](https://dati.comune.milano.it/dataset/ds502_fontanelle-nel-comune-di-milano), [case dell'acqua](https://dati.comune.milano.it/dataset/ds625-case-dell-acqua-nel-comune-di-milano)), licenza CC BY. Mappa © OpenStreetMap.
+Dati: open data del Comune di Milano ([vedovelle](https://dati.comune.milano.it/dataset/ds502_fontanelle-nel-comune-di-milano), [case dell'acqua](https://dati.comune.milano.it/dataset/ds625-case-dell-acqua-nel-comune-di-milano)), licenza CC BY. Mappa © OpenStreetMap, CARTO.
 
 ## Struttura
 
-Sito statico senza build: `index.html`, `css/`, `js/app.js`, `sw.js`, `manifest.webmanifest`. Usa [Leaflet](https://leafletjs.com) 1.9.4, incluso in `vendor/`.
+Sito statico senza build: `index.html`, `css/`, `js/app.js`, `js/i18n.js`, `sw.js`, `manifest.webmanifest`. Lo stile riprende quello di [MostraMI](https://github.com/frafenaroli/mostraMI). Usa [Leaflet](https://leafletjs.com) 1.9.4 e le icone [Lucide](https://lucide.dev), incluse in `vendor/` (lo sprite si rigenera con `scripts/crea_sprite_lucide.py`).
 
 ## Aggiornare i dati
 
