@@ -4,7 +4,7 @@
  * - tile della mappa e ricerca indirizzi: solo rete.
  * Cambiare VERSION quando si modificano i file del sito.
  */
-const VERSION = 'v7';
+const VERSION = 'v8';
 const SHELL = `dissetami-shell-${VERSION}`;
 const DATI = `dissetami-dati-${VERSION}`;
 
