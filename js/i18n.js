@@ -4,7 +4,6 @@ window.TESTI = {
   it: {
     'meta.title': "DissetaMI · Vedovelle e case dell'acqua di Milano",
     'meta.desc': "Mappa di vedovelle e case dell'acqua di Milano: trova la più vicina, cerca un indirizzo, scopri curiosità e FAQ.",
-    'lang.switch': 'Switch to English',
 
     'hero.l1': 'Le fontanelle di Milano,',
     'hero.l2': 'a portata di sorso.',
@@ -13,6 +12,12 @@ window.TESTI = {
     'search.aria': 'Cerca un indirizzo o un quartiere',
     'btn.nearest': 'Più vicina',
     'btn.search': 'Cerca',
+    'btn.scopri': 'Scopri di più e FAQ',
+    'btn.schermoIntero': 'Mappa a tutto schermo',
+    'btn.esciSchermo': 'Esci dal tutto schermo',
+    'scopri.titolo': 'Scopri di più',
+    'tab.info': "L'acqua e il sito",
+    'sez.curiosita': 'Curiosità',
     'btn.locate': 'Mostra la mia posizione',
     'filtri.aria': 'Mostra sulla mappa',
     'mappa.aria': "Mappa di vedovelle e case dell'acqua",
@@ -45,12 +50,8 @@ window.TESTI = {
     'avviso.categoria': 'Seleziona almeno una categoria.',
     'avviso.nessunPunto': 'Nessun punto disponibile.',
 
-    'banner.vedovelle': 'Cosa sono le vedovelle',
-    'banner.case': "Come funzionano le case dell'acqua",
 
-    'sez.sapevi': 'Lo sapevi?',
     'sez.faq': 'Domande frequenti',
-    'sez.sito': 'Sul sito',
     'intro': "L'acqua pubblica di Milano arriva dalla falda sotto la città: viene pompata dai pozzi, trattata nelle centrali dell'acquedotto e distribuita in rete. È la stessa che esce dal rubinetto di casa, dalle vedovelle e dalle case dell'acqua.",
 
     'ved.desc': "Le fontanelle pubbliche di Milano: colonnine di ghisa verde con un rubinetto a becco da cui l'acqua scorre di continuo.",
@@ -103,7 +104,6 @@ window.TESTI = {
   en: {
     'meta.title': 'DissetaMI · Drinking fountains and water kiosks in Milan',
     'meta.desc': 'Map of drinking fountains (vedovelle) and water kiosks in Milan: find the nearest one, search an address, read facts and FAQ.',
-    'lang.switch': 'Passa all’italiano',
 
     'hero.l1': "Milan's drinking fountains,",
     'hero.l2': 'just a sip away.',
@@ -112,6 +112,12 @@ window.TESTI = {
     'search.aria': 'Search an address or neighbourhood',
     'btn.nearest': 'Nearest',
     'btn.search': 'Search',
+    'btn.scopri': 'Learn more & FAQ',
+    'btn.schermoIntero': 'Full-screen map',
+    'btn.esciSchermo': 'Exit full screen',
+    'scopri.titolo': 'Learn more',
+    'tab.info': 'Water & this site',
+    'sez.curiosita': 'Fun facts',
     'btn.locate': 'Show my location',
     'filtri.aria': 'Show on map',
     'mappa.aria': 'Map of drinking fountains and water kiosks',
@@ -144,12 +150,8 @@ window.TESTI = {
     'avviso.categoria': 'Select at least one category.',
     'avviso.nessunPunto': 'No points available.',
 
-    'banner.vedovelle': 'What are vedovelle',
-    'banner.case': 'How water kiosks work',
 
-    'sez.sapevi': 'Did you know?',
     'sez.faq': 'FAQ',
-    'sez.sito': 'About this site',
     'intro': "Milan's public water comes from the aquifer beneath the city: it is pumped from wells, treated at the waterworks and piped across town. It is the same water that flows from home taps, from the vedovelle and from the water kiosks.",
 
     'ved.desc': "Milan's public drinking fountains: green cast-iron posts with a curved spout where water runs non-stop.",

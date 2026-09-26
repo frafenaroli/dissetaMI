@@ -4,7 +4,7 @@
  * - tile della mappa e ricerca indirizzi: solo rete.
  * Cambiare VERSION quando si modificano i file del sito.
  */
-const VERSION = 'v2';
+const VERSION = 'v3';
 const SHELL = `dissetami-shell-${VERSION}`;
 const DATI = `dissetami-dati-${VERSION}`;
 
@@ -21,6 +21,7 @@ const SHELL_FILES = [
   './icons/icon-512.png',
   './vendor/leaflet/leaflet.css',
   './vendor/leaflet/leaflet.js',
+  './vendor/lucide/sprite.svg',
 ];
 
 self.addEventListener('install', (event) => {

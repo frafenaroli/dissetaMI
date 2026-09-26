@@ -6,13 +6,29 @@
   const BBOX_MILANO = '9.03,45.56,9.30,45.35'; // viewbox Nominatim: ovest,nord,est,sud
   const COLORI = { vedovelle: '#2f8f5b', case: '#3b6fd6' };
   const TIPI = Object.keys(COLORI);
-  const ANEDDOTI = [
-    ['nome', 'vedovelle'], ['stessa', 'case'], ['dito', 'vedovelle'], ['plastica', 'case'],
-    ['aperte', 'vedovelle'], ['falda', 'entrambe'], ['verde', 'vedovelle'],
-  ];
+  // Contenuti della finestra "Scopri di più e FAQ", per scheda.
+  const SCOPRI = {
+    vedovelle: { desc: 'ved.desc', curiosita: ['nome', 'dito', 'aperte', 'verde'], faq: ['v1', 'v2', 'v3', 'v4'] },
+    case: { desc: 'case.desc', curiosita: ['stessa', 'plastica'], faq: ['c1', 'c2', 'c3', 'c4'] },
+    info: { desc: 'intro', curiosita: ['falda'], faq: ['s1', 's2', 's3', 's4'] },
+  };
 
   const $ = (id) => document.getElementById(id);
-  const stato = { dati: null, livelli: {}, io: null, pinIo: null, pinCerca: null, selezionato: null, evidenza: null };
+  const SPRITE = 'vendor/lucide/sprite.svg#';
+  const stato = { dati: null, livelli: {}, io: null, pinIo: null, pinCerca: null, selezionato: null, evidenza: null, tabScopri: 'vedovelle' };
+
+  function icona(nome, size) {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'ico');
+    svg.setAttribute('width', size);
+    svg.setAttribute('height', size);
+    svg.setAttribute('aria-hidden', 'true');
+    const use = document.createElementNS(ns, 'use');
+    use.setAttribute('href', SPRITE + nome);
+    svg.appendChild(use);
+    return svg;
+  }
 
   /* ---------- Lingua ---------- */
   let lingua = (() => {
@@ -33,19 +49,22 @@
     document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
     document.querySelectorAll('[data-i18n-ph]').forEach((el) => { el.placeholder = t(el.dataset.i18nPh); });
     document.querySelectorAll('[data-i18n-aria]').forEach((el) => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
-    document.querySelectorAll('#lingua [data-l]').forEach((el) => el.classList.toggle('attiva', el.dataset.l === lingua));
-    disegnaAneddoti();
-    disegnaFaq();
+    document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t(el.dataset.i18nTitle); });
+    document.querySelectorAll('.lingua [data-l]').forEach((el) => el.setAttribute('aria-pressed', el.dataset.l === lingua));
+    document.querySelector('.lingua').dataset.attiva = lingua;
+    aggiornaSchermo();
+    disegnaScopri();
     disegnaFooter();
     if (stato.selezionato) apriScheda(stato.selezionato.punto, stato.selezionato.tipo, stato.selezionato.origine);
     $('suggerimenti').hidden = true;
   }
 
-  $('lingua').addEventListener('click', () => {
-    lingua = lingua === 'it' ? 'en' : 'it';
+  document.querySelectorAll('.lingua [data-l]').forEach((btn) => btn.addEventListener('click', () => {
+    if (btn.dataset.l === lingua) return;
+    lingua = btn.dataset.l;
     try { localStorage.setItem('dissetami-lingua', lingua); } catch (e) { /* storage non disponibile */ }
     applicaLingua();
-  });
+  }));
 
   function badge(tipo) {
     const b = document.createElement('span');
@@ -54,40 +73,79 @@
     return b;
   }
 
-  function disegnaAneddoti() {
-    const box = $('aneddoti');
-    box.innerHTML = '';
-    ANEDDOTI.forEach(([chiave, tipo]) => {
-      const card = document.createElement('article');
-      card.className = 'card';
-      const tags = document.createElement('div');
-      tags.className = 'tags';
-      (tipo === 'entrambe' ? TIPI : [tipo]).forEach((tp) => tags.appendChild(badge(tp)));
-      const nome = document.createElement('h3');
-      nome.className = 'card-name';
-      nome.textContent = t(`an.${chiave}.t`);
-      const desc = document.createElement('p');
-      desc.className = 'card-desc';
-      desc.textContent = t(`an.${chiave}.d`);
-      card.append(tags, nome, desc);
-      box.appendChild(card);
+  /* ---------- Finestra "Scopri di più e FAQ" ---------- */
+  function disegnaScopri() {
+    const tab = stato.tabScopri;
+    const c = SCOPRI[tab];
+    document.querySelectorAll('#scopri-tabs [role="tab"]').forEach((b) => {
+      const attiva = b.dataset.tab === tab;
+      b.setAttribute('aria-selected', attiva);
+      b.tabIndex = attiva ? 0 : -1;
+    });
+    const corpo = $('scopri-corpo');
+    corpo.className = 'popup-content scopri-corpo tab-' + tab;
+    corpo.innerHTML = '';
+
+    const desc = document.createElement('p');
+    desc.className = 'scopri-desc';
+    desc.textContent = t(c.desc);
+    corpo.appendChild(desc);
+
+    const h1 = document.createElement('h3');
+    h1.className = 'scopri-sez';
+    h1.append(icona('sparkles', 14), t('sez.curiosita'));
+    const lista = document.createElement('ul');
+    lista.className = 'curiosita';
+    c.curiosita.forEach((k) => {
+      const li = document.createElement('li');
+      const b = document.createElement('b');
+      b.textContent = t(`an.${k}.t`);
+      const p = document.createElement('span');
+      p.textContent = t(`an.${k}.d`);
+      li.append(b, p);
+      lista.appendChild(li);
+    });
+    corpo.append(h1, lista);
+
+    const h2 = document.createElement('h3');
+    h2.className = 'scopri-sez';
+    h2.append(icona('circle-help', 14), t('sez.faq'));
+    corpo.appendChild(h2);
+    c.faq.forEach((id) => {
+      const d = document.createElement('details');
+      const s = document.createElement('summary');
+      s.append(document.createTextNode(t(`faq.${id}.q`)), icona('chevron-down', 18));
+      const p = document.createElement('p');
+      p.innerHTML = t(`faq.${id}.a`); // testi nostri, possono contenere link
+      d.append(s, p);
+      corpo.appendChild(d);
     });
   }
 
-  function disegnaFaq() {
-    document.querySelectorAll('[data-faq]').forEach((box) => {
-      box.innerHTML = '';
-      box.dataset.faq.split(' ').forEach((id) => {
-        const d = document.createElement('details');
-        const s = document.createElement('summary');
-        s.textContent = t(`faq.${id}.q`);
-        const p = document.createElement('p');
-        p.innerHTML = t(`faq.${id}.a`); // testi nostri, possono contenere link
-        d.append(s, p);
-        box.appendChild(d);
-      });
-    });
+  function apriScopri(tab) {
+    if (tab) stato.tabScopri = tab;
+    disegnaScopri();
+    $('scopri').hidden = false;
+    $('scopri').querySelector('.popup').scrollTop = 0;
+    $('scopri-chiudi').focus();
   }
+  function chiudiScopri() { $('scopri').hidden = true; }
+
+  $('btn-scopri').addEventListener('click', () => apriScopri());
+  $('scopri-chiudi').addEventListener('click', chiudiScopri);
+  $('scopri').addEventListener('click', (e) => { if (e.target === $('scopri')) chiudiScopri(); });
+  $('scopri-tabs').addEventListener('click', (e) => {
+    const b = e.target.closest('[role="tab"]');
+    if (b) { stato.tabScopri = b.dataset.tab; disegnaScopri(); }
+  });
+  $('scopri-tabs').addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    const tabs = Object.keys(SCOPRI);
+    const i = (tabs.indexOf(stato.tabScopri) + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+    stato.tabScopri = tabs[i];
+    disegnaScopri();
+    $('scopri-tabs').querySelector(`[data-tab="${tabs[i]}"]`).focus();
+  });
 
   function disegnaFooter() {
     const agg = stato.dati && stato.dati.aggiornato;
@@ -107,6 +165,39 @@
     maxZoom: 19, subdomains: 'abcd',
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>',
   }).addTo(mappa);
+
+  /* ---------- Mappa a tutto schermo ----------
+   * La classe CSS rende la mappa fissa su tutto il viewport (funziona anche su iPhone);
+   * dove il browser lo consente si chiede anche il vero schermo intero, per nascondere le barre. */
+  const card = $('mappa');
+  const inSchermoIntero = () => card.classList.contains('schermo-intero');
+  function aggiornaSchermo() {
+    const on = inSchermoIntero();
+    const btn = $('btn-schermo');
+    btn.querySelector('use').setAttribute('href', SPRITE + (on ? 'minimize-2' : 'maximize-2'));
+    btn.setAttribute('aria-label', t(on ? 'btn.esciSchermo' : 'btn.schermoIntero'));
+    btn.title = btn.getAttribute('aria-label');
+    btn.setAttribute('aria-pressed', on);
+  }
+  function impostaSchermo(on) {
+    card.classList.toggle('schermo-intero', on);
+    document.body.classList.toggle('bloccato', on);
+    aggiornaSchermo();
+    setTimeout(() => mappa.invalidateSize(), 50);
+  }
+  function entraSchermoIntero() {
+    impostaSchermo(true);
+    const root = document.documentElement;
+    if (root.requestFullscreen && !document.fullscreenElement) root.requestFullscreen().catch(() => {});
+  }
+  function esciSchermoIntero() {
+    impostaSchermo(false);
+    if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+  }
+  $('btn-schermo').addEventListener('click', () => (inSchermoIntero() ? esciSchermoIntero() : entraSchermoIntero()));
+  document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement && inSchermoIntero()) impostaSchermo(false);
+  });
 
   // Punti più piccoli quando la mappa è lontana, per non coprire tutta la città.
   const raggio = () => (mappa.getZoom() < 14 ? 5 : 7);
@@ -141,6 +232,7 @@
     timerAvviso = setTimeout(() => { el.hidden = true; }, ms);
   }
   function vaiAllaMappa() {
+    if (inSchermoIntero()) return;
     const r = $('mappa').getBoundingClientRect();
     if (r.top < 0 || r.bottom > window.innerHeight) $('mappa').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
@@ -190,7 +282,12 @@
   }
   $('scheda-chiudi').addEventListener('click', chiudiScheda);
   $('scheda').addEventListener('click', (e) => { if (e.target === $('scheda')) chiudiScheda(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') chiudiScheda(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (!$('scheda').hidden) chiudiScheda();
+    else if (!$('scopri').hidden) chiudiScopri();
+    else if (inSchermoIntero()) esciSchermoIntero();
+  });
 
   /* ---------- Dati ---------- */
   function caricaDati() {
@@ -272,9 +369,9 @@
   $('btn-posizione').addEventListener('click', () => {
     localizza().then((io) => mappa.setView([io.lat, io.lng], 16)).catch(erroreGeo);
   });
-  $('btn-vicina').addEventListener('click', () => {
+  ['btn-vicina', 'btn-vicina-mappa'].forEach((id) => $(id).addEventListener('click', () => {
     localizza().then((io) => mostraPiuVicino(io)).catch(erroreGeo);
-  });
+  }));
 
   /* ---------- Ricerca ---------- */
   const input = $('cerca-input');
