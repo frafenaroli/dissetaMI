@@ -3,125 +3,159 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>DissetaMi · Vedovelle e case dell'acqua di Milano</title>
+  <title>DissetaMI · Vedovelle e case dell'acqua di Milano</title>
   <meta name="description" content="Mappa di vedovelle e case dell'acqua di Milano: trova la più vicina, cerca un indirizzo, scopri curiosità e FAQ.">
-  <meta name="theme-color" content="#1f6f43">
+  <meta name="theme-color" content="#f6f1ea">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="DissetaMI">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="#mappa" aria-label="DissetaMi, torna alla mappa">
-      <img src="icons/icon.svg" alt="" width="28" height="28">
-      <span>Disseta<b>Mi</b></span>
-    </a>
-    <nav class="tabs" aria-label="Sezioni">
-      <a href="#mappa" data-tab="mappa">Mappa</a>
-      <a href="#scopri" data-tab="scopri">Scopri</a>
-    </nav>
-  </header>
+  <!-- Icone Lucide (https://lucide.dev, licenza ISC) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+      <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+      <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol>
+      <symbol id="i-locate" viewBox="0 0 24 24"><path d="M2 12h3M19 12h3M12 2v3M12 19v3"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="i-navigation" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+      <symbol id="i-droplet" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol>
+      <symbol id="i-glass" viewBox="0 0 24 24"><path d="M5.116 4.104A1 1 0 0 1 6.11 3h11.78a1 1 0 0 1 .994 1.105L17.19 20.21A2 2 0 0 1 15.2 22H8.8a2 2 0 0 1-2-1.79z"/><path d="M6 12a5 5 0 0 1 6 0 5 5 0 0 0 6 0"/></symbol>
+    </defs>
+  </svg>
 
-  <main>
-    <section id="vista-mappa" class="vista" aria-label="Mappa">
-      <div id="map" role="application" aria-label="Mappa di vedovelle e case dell'acqua"></div>
+  <div class="shell">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
 
-      <div class="overlay-top">
-        <form id="cerca" class="cerca" role="search" autocomplete="off">
-          <input id="cerca-input" type="search" placeholder="Cerca un indirizzo o un quartiere" aria-label="Cerca un indirizzo o un quartiere" aria-controls="suggerimenti">
-          <button type="submit" aria-label="Cerca">
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M10 2a8 8 0 0 1 6.32 12.9l5.39 5.4-1.41 1.4-5.4-5.39A8 8 0 1 1 10 2zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/></svg>
-          </button>
+    <div class="inner">
+      <header class="header">
+        <a href="#" class="logo" aria-label="DissetaMI">Disseta<span>MI</span></a>
+        <button id="lingua" class="lingua" type="button" data-i18n-aria="lang.switch">
+          <span data-l="it">IT</span><span data-l="en">EN</span>
+        </button>
+      </header>
+
+      <h1 class="hero"><span data-i18n="hero.l1">Le fontanelle di Milano,</span><br><em data-i18n="hero.l2">a portata di sorso.</em></h1>
+
+      <form id="cerca" class="search" role="search" autocomplete="off">
+        <div class="input-row">
+          <svg class="ico" width="16" height="16"><use href="#i-search"/></svg>
+          <input id="cerca-input" type="search" data-i18n-ph="search.ph" data-i18n-aria="search.aria" placeholder="Cerca un indirizzo o un quartiere…" aria-controls="suggerimenti">
           <ul id="suggerimenti" class="suggerimenti" role="listbox" hidden></ul>
-        </form>
-        <div class="filtri" role="group" aria-label="Mostra sulla mappa">
-          <label class="chip chip-vedovelle"><input type="checkbox" id="f-vedovelle" checked><span class="dot"></span>Vedovelle <small id="n-vedovelle"></small></label>
-          <label class="chip chip-case"><input type="checkbox" id="f-case" checked><span class="dot"></span>Case dell'acqua <small id="n-case"></small></label>
         </div>
+        <div class="button-row">
+          <button id="btn-vicina" type="button" class="pill secondary">
+            <svg class="ico" width="15" height="15"><use href="#i-navigation"/></svg>
+            <span data-i18n="btn.nearest">Più vicina</span>
+          </button>
+          <button type="submit" class="pill primary">
+            <svg class="ico" width="15" height="15"><use href="#i-search"/></svg>
+            <span data-i18n="btn.search">Cerca</span>
+          </button>
+        </div>
+      </form>
+
+      <div class="filtri" role="group" data-i18n-aria="filtri.aria">
+        <label class="chip chip-vedovelle"><input type="checkbox" id="f-vedovelle" checked><span class="dot"></span><span data-i18n="plurale.vedovelle">Vedovelle</span> <small id="n-vedovelle"></small></label>
+        <label class="chip chip-case"><input type="checkbox" id="f-case" checked><span class="dot"></span><span data-i18n="plurale.case">Case dell'acqua</span> <small id="n-case"></small></label>
       </div>
 
-      <div class="azioni">
-        <button id="btn-posizione" class="fab" aria-label="Mostra la mia posizione" title="La mia posizione">
-          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm1-6v2.06A8 8 0 0 1 19.94 11H22v2h-2.06A8 8 0 0 1 13 19.94V22h-2v-2.06A8 8 0 0 1 4.06 13H2v-2h2.06A8 8 0 0 1 11 4.06V2h2zm-1 4a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/></svg>
+      <section class="mappa-card" id="mappa">
+        <div id="map" role="application" data-i18n-aria="mappa.aria"></div>
+        <button id="btn-posizione" class="icon-btn" type="button" data-i18n-aria="btn.locate">
+          <svg class="ico" width="18" height="18"><use href="#i-locate"/></svg>
         </button>
-        <button id="btn-vicina" class="fab fab-testo">
-          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 2c3.5 4.2 6 7.9 6 11a6 6 0 0 1-12 0c0-3.1 2.5-6.8 6-11z"/></svg>
-          Più vicina
-        </button>
+        <div id="avviso" class="avviso" role="status" aria-live="polite" hidden></div>
+      </section>
+
+      <div class="banners">
+        <a href="#vedovelle" class="banner banner-vedovelle">
+          <svg class="ico" width="26" height="26"><use href="#i-droplet"/></svg>
+          <span class="banner-title" data-i18n="banner.vedovelle">Cosa sono le vedovelle</span>
+          <svg class="ico arrow" width="20" height="20"><use href="#i-arrow-right"/></svg>
+        </a>
+        <a href="#case" class="banner banner-case">
+          <svg class="ico" width="26" height="26"><use href="#i-glass"/></svg>
+          <span class="banner-title" data-i18n="banner.case">Come funzionano le case dell'acqua</span>
+          <svg class="ico arrow" width="20" height="20"><use href="#i-arrow-right"/></svg>
+        </a>
       </div>
 
-      <div id="avviso" class="avviso" role="status" aria-live="polite" hidden></div>
+      <section class="sezione">
+        <h2 class="sezione-titolo" data-i18n="sez.sapevi">Lo sapevi?</h2>
+        <div class="carosello" id="aneddoti"></div>
+      </section>
 
-      <article id="scheda" class="scheda" aria-live="polite" hidden>
-        <button class="chiudi" id="scheda-chiudi" aria-label="Chiudi">×</button>
-        <p class="scheda-tipo" id="scheda-tipo"></p>
-        <h2 id="scheda-titolo"></h2>
-        <p class="scheda-info" id="scheda-info"></p>
-        <div class="scheda-azioni">
-          <a id="scheda-indicazioni" class="btn btn-primario" target="_blank" rel="noopener">Indicazioni a piedi</a>
-          <a id="scheda-maps" class="btn" target="_blank" rel="noopener">Apri in Google Maps</a>
+      <section class="sezione">
+        <h2 class="sezione-titolo" data-i18n="sez.faq">Domande frequenti</h2>
+        <p class="intro" data-i18n="intro"></p>
+        <div class="faq-grid">
+          <article class="faq-card" id="vedovelle">
+            <div class="faq-head"><span class="badge badge-vedovelle" data-i18n="plurale.vedovelle">Vedovelle</span></div>
+            <p class="faq-desc" data-i18n="ved.desc"></p>
+            <div data-faq="v1 v2 v3 v4"></div>
+          </article>
+          <article class="faq-card" id="case">
+            <div class="faq-head"><span class="badge badge-case" data-i18n="plurale.case">Case dell'acqua</span></div>
+            <p class="faq-desc" data-i18n="case.desc"></p>
+            <div data-faq="c1 c2 c3 c4"></div>
+          </article>
+          <article class="faq-card faq-sito">
+            <div class="faq-head"><span class="badge badge-neutro" data-i18n="sez.sito">Sul sito</span></div>
+            <div data-faq="s1 s2 s3 s4"></div>
+          </article>
         </div>
-      </article>
-    </section>
+      </section>
 
-    <section id="vista-scopri" class="vista scopri" aria-label="Scopri" hidden>
-      <div class="contenuto">
-        <h1>Bere a Milano, gratis</h1>
-        <p class="intro">L'acqua pubblica di Milano arriva dalla falda sotto la città: viene pompata dai pozzi, trattata nelle centrali dell'acquedotto e distribuita in rete. È la stessa che esce dal rubinetto di casa, dalle vedovelle e dalle case dell'acqua.</p>
+      <footer class="footer">
+        <p class="dati" id="footer-dati"></p>
+        <p class="copy">© 2026 DissetaMI MVP by Francesca Fenaroli<br>
+          Made with ❤️ &amp; <img src="icons/claudecode.png" alt="Claude Code" class="cc-logo"></p>
+      </footer>
+    </div>
+  </div>
 
-        <div class="categoria cat-vedovelle">
-          <h2><span class="dot"></span>Vedovelle</h2>
-          <p>Le fontanelle pubbliche di Milano: colonnine di ghisa verde con un rubinetto a becco da cui l'acqua scorre di continuo.</p>
-
-          <h3>Lo sapevi?</h3>
-          <ul class="aneddoti">
-            <li><b>Il nome.</b> Si chiamano così perché l'acqua scende senza sosta, come le lacrime di una vedova inconsolabile.</li>
-            <li><b>Il trucco del dito.</b> Tappando con un dito la punta del rubinetto, l'acqua esce da un forellino sulla parte superiore e disegna un piccolo zampillo: si beve senza appoggiare la bocca.</li>
-            <li><b>Perché non si chiudono.</b> Il flusso continuo tiene l'acqua fresca e in movimento, evitando che ristagni nel tratto di tubo che alimenta la fontanella.</li>
-            <li><b>Riconoscibili ovunque.</b> Il verde scuro della ghisa è lo stesso di tanti arredi storici della città, e su molte vedovelle compare lo stemma di Milano.</li>
-          </ul>
-
-          <h3>Domande frequenti</h3>
-          <details><summary>L'acqua delle vedovelle è potabile?</summary><p>Sì, è acqua dell'acquedotto cittadino, soggetta agli stessi controlli dell'acqua di casa. Se su una fontanella c'è un cartello di non potabilità, rispettalo.</p></details>
-          <details><summary>Posso riempire la borraccia?</summary><p>Certo. Evita di appoggiare la borraccia o la bocca sul rubinetto, per igiene di tutti.</p></details>
-          <details><summary>Non è uno spreco lasciarle sempre aperte?</summary><p>Il getto è piccolo ed è pensato proprio per mantenere l'acqua fresca e pulita nel tubo. Se una vedovella perde in modo anomalo o è rotta, segnalalo al gestore del servizio idrico (MM Spa) o al Comune.</p></details>
-          <details><summary>Posso far bere il cane?</summary><p>Sì, meglio con una ciotola o con le mani, senza fargli toccare il rubinetto.</p></details>
-        </div>
-
-        <div class="categoria cat-case">
-          <h2><span class="dot"></span>Case dell'acqua</h2>
-          <p>Piccoli chioschi che erogano acqua dell'acquedotto refrigerata, liscia o frizzante, da portare via con le proprie bottiglie.</p>
-
-          <h3>Lo sapevi?</h3>
-          <ul class="aneddoti">
-            <li><b>Stessa acqua, più comodità.</b> L'acqua è quella della rete pubblica: la casetta la raffredda e, se vuoi, aggiunge anidride carbonica per renderla frizzante.</li>
-            <li><b>Meno plastica.</b> Ogni bottiglia riempita alla casetta è una bottiglia di plastica in meno da comprare, trasportare e smaltire.</li>
-            <li><b>Un punto di quartiere.</b> Le case dell'acqua sono distribuite tra i Municipi, spesso vicino a parchi, scuole e piazze.</li>
-          </ul>
-
-          <h3>Domande frequenti</h3>
-          <details><summary>Quanto costa?</summary><p>A Milano l'acqua delle case dell'acqua è di norma gratuita. Eventuali limiti di quantità o modalità di accesso sono indicati sulla casetta.</p></details>
-          <details><summary>Serve una tessera?</summary><p>Dipende dalla casetta: in alcuni casi può essere richiesta. Controlla le istruzioni esposte sul posto.</p></details>
-          <details><summary>Come conservo l'acqua che prendo?</summary><p>Usa bottiglie pulite, tienile in frigo e consuma l'acqua in tempi brevi, soprattutto quella frizzante.</p></details>
-          <details><summary>La casetta non funziona, a chi lo dico?</summary><p>Sulla casetta sono di solito indicati i contatti del gestore per le segnalazioni.</p></details>
-        </div>
-
-        <div class="categoria">
-          <h2>Sul sito</h2>
-          <details><summary>Da dove vengono i dati?</summary><p>Dagli open data del Comune di Milano: <a href="https://dati.comune.milano.it/dataset/ds502_fontanelle-nel-comune-di-milano" target="_blank" rel="noopener">vedovelle</a> e <a href="https://dati.comune.milano.it/dataset/ds625-case-dell-acqua-nel-comune-di-milano" target="_blank" rel="noopener">case dell'acqua</a>, con licenza Creative Commons Attribuzione. <span id="info-aggiornamento"></span></p></details>
-          <details><summary>Una fontanella sulla mappa non c'è più (o manca)</summary><p>La mappa riflette i dati pubblicati dal Comune, che possono non essere allineati con la situazione in strada. Le correzioni vanno segnalate al Comune o al gestore.</p></details>
-          <details><summary>Cosa succede alla mia posizione?</summary><p>Resta nel tuo browser: serve solo a trovare il punto più vicino e non viene inviata a nessuno. La ricerca di indirizzi usa il servizio Nominatim di OpenStreetMap, che riceve solo il testo che scrivi.</p></details>
-          <details><summary>Posso usarlo come un'app?</summary><p>Sì. Dal menu del browser scegli “Aggiungi a schermata Home” o “Installa app”. La mappa dei punti resta consultabile anche offline, mentre lo sfondo della mappa richiede la connessione.</p></details>
-        </div>
-
-        <p class="crediti">Mappa © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · Dati © Comune di Milano (CC BY) · <a href="https://github.com/frafenaroli/dissetaMI" target="_blank" rel="noopener">Codice</a></p>
+  <div id="scheda" class="scrim" hidden>
+    <div class="popup" role="dialog" aria-modal="true" aria-labelledby="scheda-titolo">
+      <div class="auras" aria-hidden="true"><div class="aura"></div><div class="aura"></div></div>
+      <button class="close-btn" id="scheda-chiudi" type="button" data-i18n-aria="chiudi">
+        <svg class="ico" width="17" height="17"><use href="#i-close"/></svg>
+      </button>
+      <div class="popup-top">
+        <div class="tags" id="scheda-tags"></div>
+        <h2 class="popup-name" id="scheda-titolo"></h2>
       </div>
-    </section>
-  </main>
+      <div class="popup-content">
+        <div class="meta-row" id="scheda-luogo"><svg class="ico" width="14" height="14"><use href="#i-pin"/></svg><span></span></div>
+        <div class="meta-row" id="scheda-distanza"><svg class="ico" width="14" height="14"><use href="#i-clock"/></svg><span></span></div>
+        <div class="actions">
+          <a id="scheda-indicazioni" class="pill primary" target="_blank" rel="noopener">
+            <svg class="ico" width="16" height="16"><use href="#i-pin"/></svg><span data-i18n="scheda.vai">Portami qui!</span>
+          </a>
+          <a id="scheda-maps" class="pill outline" target="_blank" rel="noopener">
+            <span data-i18n="scheda.maps">Apri in Google Maps</span><svg class="ico" width="14" height="14"><use href="#i-arrow-up-right"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

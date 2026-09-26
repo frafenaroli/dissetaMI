@@ -30,7 +30,7 @@ DATASET = {
 OUT = Path(__file__).resolve().parent.parent / "data" / "punti.json"
 # Riquadro largo attorno a Milano: scarta coordinate palesemente errate.
 BBOX = (45.35, 45.56, 9.03, 9.30)  # lat min, lat max, lng min, lng max
-UA = "DissetaMi/1.0 (+https://github.com/frafenaroli/dissetaMI)"
+UA = "DissetaMI/1.0 (+https://github.com/frafenaroli/dissetaMI)"
 
 
 def scarica(url):
