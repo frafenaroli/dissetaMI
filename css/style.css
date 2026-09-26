@@ -153,6 +153,8 @@ button { font-family: inherit; }
   box-shadow: var(--shadow-soft); background: oklch(94% 0.01 70); scroll-margin-top: 16px;
 }
 #map { position: absolute; inset: 0; background: oklch(94% 0.01 70); }
+/* Tile OpenStreetMap più tenui, per stare con la palette chiara. */
+.leaflet-tile-pane { filter: saturate(0.55) sepia(0.08) brightness(1.03); }
 .leaflet-container { font-family: var(--font-sans); }
 .leaflet-control-attribution { font-size: 10px; background: oklch(99% 0 0 / 0.7) !important; }
 .leaflet-control-zoom a { color: var(--color-text) !important; }

@@ -9,7 +9,7 @@ Una mappa interattiva di vedovelle e case dell'acqua di Milano.
 - Si installa come app (PWA) e i punti restano consultabili offline.
 - In italiano e in inglese (testi in `js/i18n.js`).
 
-Dati: open data del Comune di Milano ([vedovelle](https://dati.comune.milano.it/dataset/ds502_fontanelle-nel-comune-di-milano), [case dell'acqua](https://dati.comune.milano.it/dataset/ds625-case-dell-acqua-nel-comune-di-milano)), licenza CC BY. Mappa © OpenStreetMap, CARTO.
+Dati: open data del Comune di Milano ([vedovelle](https://dati.comune.milano.it/dataset/ds502_fontanelle-nel-comune-di-milano), [case dell'acqua](https://dati.comune.milano.it/dataset/ds625-case-dell-acqua-nel-comune-di-milano)), licenza CC BY. Mappa © OpenStreetMap.
 
 ## Struttura
 

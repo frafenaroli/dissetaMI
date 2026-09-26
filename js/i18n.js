@@ -97,8 +97,8 @@ window.TESTI = {
     'faq.s4.q': "Posso usarlo come un'app?",
     'faq.s4.a': 'Sì. Dal menu del browser scegli “Aggiungi a schermata Home” o “Installa app”. I punti restano consultabili anche offline, mentre lo sfondo della mappa richiede la connessione.',
 
-    'footer.dati': 'Dati © Comune di Milano (CC BY), aggiornati il {data} · Mappa © OpenStreetMap, CARTO',
-    'footer.datiSenzaData': 'Dati © Comune di Milano (CC BY) · Mappa © OpenStreetMap, CARTO',
+    'footer.dati': 'Dati © Comune di Milano (CC BY), aggiornati il {data} · Mappa © OpenStreetMap',
+    'footer.datiSenzaData': 'Dati © Comune di Milano (CC BY) · Mappa © OpenStreetMap',
   },
 
   en: {
@@ -197,7 +197,7 @@ window.TESTI = {
     'faq.s4.q': 'Can I use it as an app?',
     'faq.s4.a': 'Yes. From the browser menu choose “Add to Home screen” or “Install app”. The points stay available offline, while the map background needs a connection.',
 
-    'footer.dati': 'Data © Comune di Milano (CC BY), updated {data} · Map © OpenStreetMap, CARTO',
-    'footer.datiSenzaData': 'Data © Comune di Milano (CC BY) · Map © OpenStreetMap, CARTO',
+    'footer.dati': 'Data © Comune di Milano (CC BY), updated {data} · Map © OpenStreetMap',
+    'footer.datiSenzaData': 'Data © Comune di Milano (CC BY) · Map © OpenStreetMap',
   },
 };
