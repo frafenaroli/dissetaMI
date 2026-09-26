@@ -4,11 +4,11 @@ Una mappa interattiva di vedovelle e case dell'acqua di Milano.
 
 - Trova il punto più vicino con la geolocalizzazione, oppure cercando un indirizzo o un quartiere.
 - Apri le indicazioni a piedi in Google Maps.
-- Leggi curiosità e FAQ nella sezione **Scopri**.
+- Leggi curiosità e FAQ sulle due categorie.
 - Si installa come app (PWA) e i punti restano consultabili offline.
 - In italiano e in inglese (testi in `js/i18n.js`).
 
-Dati: open data del Comune di Milano ([vedovelle](https://dati.comune.milano.it/dataset/ds502_fontanelle-nel-comune-di-milano), [case dell'acqua](https://dati.comune.milano.it/dataset/ds625-case-dell-acqua-nel-comune-di-milano)), licenza CC BY. Mappa © OpenStreetMap.
+Dati: open data del Comune di Milano ([vedovelle](https://dati.comune.milano.it/dataset/ds502_fontanelle-nel-comune-di-milano), [case dell'acqua](https://dati.comune.milano.it/dataset/ds625-case-dell-acqua-nel-comune-di-milano)), licenza CC BY. Mappa © OpenStreetMap, CARTO.
 
 ## Struttura
 
