@@ -4,7 +4,7 @@
  * - tile della mappa e ricerca indirizzi: solo rete.
  * Cambiare VERSION quando si modificano i file del sito.
  */
-const VERSION = 'v5';
+const VERSION = 'v6';
 const SHELL = `dissetami-shell-${VERSION}`;
 const DATI = `dissetami-dati-${VERSION}`;
 
@@ -15,6 +15,8 @@ const SHELL_FILES = [
   './js/i18n.js',
   './js/app.js',
   './icons/claudecode.png',
+  './img/vedovella.svg',
+  './img/casa-acqua.svg',
   './manifest.webmanifest',
   './icons/icon.svg',
   './icons/icon-192.png',

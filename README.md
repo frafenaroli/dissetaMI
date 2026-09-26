@@ -37,6 +37,6 @@ e apri http://localhost:8000.
 
 Ogni push su `main` pubblica il sito su GitHub Pages tramite `.github/workflows/deploy.yml`. In **Settings → Pages** la sorgente deve essere **GitHub Actions**.
 
-## Immagini della scheda
+## Illustrazioni della scheda
 
-La scheda di ogni punto ha in alto lo spazio per un'immagine per categoria. Per aggiungerle, metti i file in `img/` e indica i percorsi in `IMMAGINI` all'inizio di `js/app.js` (es. `vedovelle: 'img/vedovella.jpg'`). Finché sono vuoti si vede un segnaposto colorato.
+La scheda di ogni punto mostra un'illustrazione per categoria, in `img/` (`vedovella.svg`, `casa-acqua.svg`). I percorsi sono in `IMMAGINI` all'inizio di `js/app.js`.

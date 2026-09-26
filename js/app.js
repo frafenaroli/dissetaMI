@@ -10,12 +10,12 @@
   const SCOPRI = {
     vedovelle: { desc: 'ved.desc', curiosita: ['nome', 'dito', 'aperte', 'verde'], faq: ['v1', 'v2', 'v3', 'v4'] },
     case: { desc: 'case.desc', curiosita: ['stessa', 'plastica'], faq: ['c1', 'c2', 'c3', 'c4'] },
-    info: { desc: 'intro', curiosita: ['falda'], faq: ['s1', 's2', 's3', 's4'] },
+    acqua: { desc: 'intro', curiosita: ['falda'], faq: [] },
+    sito: { desc: null, curiosita: [], faq: ['s1', 's2', 's3', 's4'] },
   };
 
-  // Immagine in cima alla scheda del punto: percorso del file (es. 'img/vedovella.jpg').
-  // Finché è vuoto la scheda mostra un segnaposto colorato con l'icona della categoria.
-  const IMMAGINI = { vedovelle: '', case: '' };
+  // Illustrazione al centro della scheda del punto, per categoria.
+  const IMMAGINI = { vedovelle: 'img/vedovella.svg', case: 'img/casa-acqua.svg' };
 
   const $ = (id) => document.getElementById(id);
   const SPRITE = 'vendor/lucide/sprite.svg#';
@@ -54,8 +54,8 @@
     document.querySelectorAll('[data-i18n-ph]').forEach((el) => { el.placeholder = t(el.dataset.i18nPh); });
     document.querySelectorAll('[data-i18n-aria]').forEach((el) => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
     document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t(el.dataset.i18nTitle); });
-    document.querySelectorAll('.lingua [data-l]').forEach((el) => el.setAttribute('aria-pressed', el.dataset.l === lingua));
-    document.querySelector('.lingua').dataset.attiva = lingua;
+    $('lingua-sigla').textContent = lingua === 'it' ? 'EN' : 'IT';
+    $('lingua-sigla').lang = lingua === 'it' ? 'en' : 'it';
     aggiornaSchermo();
     disegnaScopri();
     disegnaFooter();
@@ -63,12 +63,11 @@
     $('suggerimenti').hidden = true;
   }
 
-  document.querySelectorAll('.lingua [data-l]').forEach((btn) => btn.addEventListener('click', () => {
-    if (btn.dataset.l === lingua) return;
-    lingua = btn.dataset.l;
+  $('lingua').addEventListener('click', () => {
+    lingua = lingua === 'it' ? 'en' : 'it';
     try { localStorage.setItem('dissetami-lingua', lingua); } catch (e) { /* storage non disponibile */ }
     applicaLingua();
-  }));
+  });
 
   function badge(tipo) {
     const b = document.createElement('span');
@@ -90,22 +89,22 @@
     corpo.className = 'popup-content scopri-corpo tab-' + tab;
     corpo.innerHTML = '';
 
-    const desc = document.createElement('p');
-    desc.className = 'scopri-desc';
-    desc.textContent = t(c.desc);
-    corpo.appendChild(desc);
-
-    const h1 = document.createElement('h3');
-    h1.className = 'scopri-sez';
-    h1.append(icona('sparkles', 14), t('sez.curiosita'));
-    corpo.appendChild(h1);
-    c.curiosita.forEach((k) => corpo.appendChild(tendina(t(`an.${k}.t`), t(`an.${k}.d`))));
-
-    const h2 = document.createElement('h3');
-    h2.className = 'scopri-sez';
-    h2.append(icona('circle-help', 14), t('sez.faq'));
-    corpo.appendChild(h2);
-    c.faq.forEach((id) => corpo.appendChild(tendina(t(`faq.${id}.q`), t(`faq.${id}.a`))));
+    if (c.desc) {
+      const desc = document.createElement('p');
+      desc.className = 'scopri-desc';
+      desc.textContent = t(c.desc);
+      corpo.appendChild(desc);
+    }
+    const sezione = (ico, titolo, voci) => {
+      if (!voci.length) return;
+      const h = document.createElement('h3');
+      h.className = 'scopri-sez';
+      h.append(icona(ico, 14), t(titolo));
+      corpo.appendChild(h);
+      voci.forEach(([d, r]) => corpo.appendChild(tendina(d, r)));
+    };
+    sezione('sparkles', 'sez.curiosita', c.curiosita.map((k) => [t(`an.${k}.t`), t(`an.${k}.d`)]));
+    sezione('circle-help', 'sez.faq', c.faq.map((id) => [t(`faq.${id}.q`), t(`faq.${id}.a`)]));
   }
 
   // Voce a tendina (curiosità e FAQ). Il testo è nostro e può contenere link.
@@ -128,7 +127,7 @@
   }
   function chiudiScopri() { $('scopri').hidden = true; }
 
-  $('footer-info').addEventListener('click', () => apriScopri('info'));
+  $('footer-info').addEventListener('click', () => apriScopri('sito'));
   $('scheda-scopri').addEventListener('click', () => {
     const tipo = stato.selezionato && stato.selezionato.tipo;
     chiudiScheda();
@@ -269,11 +268,8 @@
 
     const dest = `${punto.lat},${punto.lng}`;
     $('scheda-indicazioni').href = `https://www.google.com/maps/dir/?api=1&destination=${dest}&travelmode=walking`;
-    const img = $('scheda-img');
-    const foto = img.querySelector('img');
-    foto.hidden = !IMMAGINI[tipo];
-    if (IMMAGINI[tipo]) foto.src = IMMAGINI[tipo];
-    img.querySelector('use').setAttribute('href', SPRITE + (tipo === 'case' ? 'glass-water' : 'droplet'));
+    const ill = $('scheda-illustrazione').querySelector('img');
+    ill.src = IMMAGINI[tipo];
     $('scheda').hidden = false;
 
     if (stato.evidenza) stato.evidenza.remove();

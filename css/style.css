@@ -66,20 +66,14 @@ button { font-family: inherit; }
 }
 .logo span { background: var(--gradient-accent); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .lingua {
-  position: absolute; right: var(--gutter); top: 28px;
-  display: flex; align-items: center; gap: 2px; padding: 4px 4px 4px 10px;
+  position: absolute; right: var(--gutter); top: 28px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
   background: var(--color-surface-glass); backdrop-filter: blur(14px);
-  border: 1px solid var(--color-border-glass); border-radius: var(--radius-pill); box-shadow: var(--shadow-glass);
-  color: var(--color-text-quiet);
+  border: 1px solid var(--color-border-glass); box-shadow: var(--shadow-glass);
+  font: 600 12.5px var(--font-sans); letter-spacing: 0.04em; color: var(--color-text);
 }
-.lingua .ico { margin-right: 4px; }
-.lingua button {
-  border: none; background: none; cursor: pointer; min-width: 34px; height: 28px; padding: 0 8px;
-  border-radius: var(--radius-pill); font: 600 12px var(--font-sans); letter-spacing: 0.04em; color: var(--color-text-quiet);
-  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
-}
-.lingua button[aria-pressed="true"] { background: var(--color-surface); color: var(--color-text-strong); box-shadow: 0 1px 4px oklch(0% 0 0 / 0.12); }
-.lingua button:focus-visible { outline: 2px solid oklch(70% 0.1 230); outline-offset: 1px; }
+.lingua:hover { background: var(--color-surface); }
+.lingua:focus-visible { outline: 2px solid oklch(70% 0.1 230); outline-offset: 2px; }
 
 /* Hero */
 .hero { position: relative; padding: 34px var(--gutter) 0; font: 500 28px/1.18 var(--font-serif); color: var(--color-text-strong); }
@@ -221,7 +215,7 @@ body.bloccato { overflow: hidden; }
 .popup-name { font: 600 21px/1.3 var(--font-serif); color: var(--color-text); }
 .popup-content { position: relative; padding: 14px 24px 26px; }
 .meta-row { display: flex; align-items: center; gap: 7px; margin-bottom: 8px; font: 600 12.5px/1.45 var(--font-sans); }
-.meta-row:last-of-type { margin-bottom: 22px; }
+.meta-row:last-of-type { margin-bottom: 8px; }
 .actions { display: flex; flex-direction: column; gap: 10px; }
 .actions > * { width: 100%; }
 .popup.vedovelle .aura { background: radial-gradient(circle at center, oklch(85% 0.1 150 / 0.9), transparent 70%); }
@@ -229,21 +223,13 @@ body.bloccato { overflow: hidden; }
 .popup.vedovelle .meta-row { color: oklch(42% 0.1 155); }
 .popup.case .meta-row { color: oklch(45% 0.12 255); }
 
-/* Immagine in cima alla scheda del punto (segnaposto finché non c'è la foto) */
-.popup-img {
-  position: relative; height: 168px; display: flex; align-items: center; justify-content: center; overflow: hidden;
-  background: linear-gradient(135deg, oklch(92% 0.06 150), oklch(91% 0.05 195));
+/* Illustrazione al centro della scheda del punto */
+.popup-illustrazione {
+  display: flex; align-items: center; justify-content: center; height: 150px; margin: 6px 0 20px;
+  border-radius: 20px; background: linear-gradient(135deg, oklch(95% 0.04 150), oklch(94% 0.035 195));
 }
-.popup.case .popup-img { background: linear-gradient(135deg, oklch(92% 0.045 230), oklch(91% 0.05 285)); }
-.popup-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.popup-img .segnaposto { color: oklch(100% 0 0 / 0.85); stroke-width: 1.5; }
-.popup-img img:not([hidden]) + .segnaposto { display: none; }
-#scheda .close-btn {
-  top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 50%;
-  background: var(--color-surface-glass-strong); backdrop-filter: blur(10px); box-shadow: var(--shadow-glass);
-}
-#scheda .popup-top { padding-top: 20px; }
-#scheda .popup-top .tags { padding-right: 0; }
+.popup.case .popup-illustrazione { background: linear-gradient(135deg, oklch(95% 0.03 230), oklch(94% 0.035 285)); }
+.popup-illustrazione img { height: 112px; width: auto; }
 .link-info {
   display: inline-flex; align-items: center; gap: 6px; border: none; background: none; cursor: pointer; padding: 4px 8px;
   font: 600 12.5px var(--font-sans); color: var(--color-text-soft); text-decoration: underline; text-underline-offset: 3px;
@@ -293,7 +279,7 @@ details a { color: oklch(45% 0.12 245); }
   .blob3 { display: block; top: 900px; right: -140px; width: 420px; height: 420px; background: radial-gradient(circle, var(--aura-pesca), transparent 70%); }
   .header { padding-top: 32px; }
   .logo { font-size: 32px; }
-  .lingua { top: 32px; }
+  .lingua { top: 30px; }
   .popup-ampio .popup-top { padding: 32px 32px 16px; }
   .popup-ampio .popup-content { padding: 6px 32px 30px; }
   .hero { padding: 36px var(--gutter) 20px; font-size: 44px; line-height: 1.12; max-width: 760px; }

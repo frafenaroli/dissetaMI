@@ -28,11 +28,7 @@
     <div class="inner">
       <header class="header">
         <a href="#" class="logo" aria-label="DissetaMI">Disseta<span>MI</span></a>
-        <div class="lingua" role="group" aria-label="Lingua · Language">
-          <svg class="ico" width="15" height="15" aria-hidden="true"><use href="vendor/lucide/sprite.svg#languages"/></svg>
-          <button type="button" data-l="it" lang="it" aria-label="Italiano">IT</button>
-          <button type="button" data-l="en" lang="en" aria-label="English">EN</button>
-        </div>
+        <button id="lingua" class="lingua" type="button" data-i18n-aria="lang.altra" data-i18n-title="lang.altra"><span id="lingua-sigla">EN</span></button>
       </header>
 
       <h1 class="hero"><span data-i18n="hero.l1">Le fontanelle di Milano,</span><br><em data-i18n="hero.l2">a portata di sorso.</em></h1>
@@ -97,10 +93,6 @@
       <button class="close-btn" id="scheda-chiudi" type="button" data-i18n-aria="chiudi">
         <svg class="ico" width="18" height="18" aria-hidden="true"><use href="vendor/lucide/sprite.svg#x"/></svg>
       </button>
-      <div class="popup-img" id="scheda-img">
-        <img alt="" hidden>
-        <svg class="ico segnaposto" width="44" height="44" aria-hidden="true"><use href=""/></svg>
-      </div>
       <div class="popup-top">
         <div class="tags" id="scheda-tags"></div>
         <h2 class="popup-name" id="scheda-titolo"></h2>
@@ -108,6 +100,7 @@
       <div class="popup-content">
         <div class="meta-row" id="scheda-luogo"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="vendor/lucide/sprite.svg#map-pin"/></svg><span></span></div>
         <div class="meta-row" id="scheda-distanza"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="vendor/lucide/sprite.svg#footprints"/></svg><span></span></div>
+        <div class="popup-illustrazione" id="scheda-illustrazione"><img alt=""></div>
         <div class="actions">
           <button type="button" id="scheda-scopri" class="pill outline">
             <svg class="ico" width="15" height="15" aria-hidden="true"><use href="vendor/lucide/sprite.svg#book-open"/></svg><span data-i18n="scheda.scopri">Scopri di più</span>
@@ -132,7 +125,8 @@
         <div class="tabs" role="tablist" id="scopri-tabs">
           <button type="button" role="tab" data-tab="vedovelle"><span class="dot dot-vedovelle"></span><span data-i18n="plurale.vedovelle">Vedovelle</span></button>
           <button type="button" role="tab" data-tab="case"><span class="dot dot-case"></span><span data-i18n="plurale.case">Case dell'acqua</span></button>
-          <button type="button" role="tab" data-tab="info"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="vendor/lucide/sprite.svg#info"/></svg><span data-i18n="tab.info">Info</span></button>
+          <button type="button" role="tab" data-tab="acqua"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="vendor/lucide/sprite.svg#droplet"/></svg><span data-i18n="tab.acqua">L'acqua di Milano</span></button>
+          <button type="button" role="tab" data-tab="sito"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="vendor/lucide/sprite.svg#info"/></svg><span data-i18n="tab.sito">Su questo sito</span></button>
         </div>
       </div>
       <div class="popup-content scopri-corpo" id="scopri-corpo" role="tabpanel"></div>
