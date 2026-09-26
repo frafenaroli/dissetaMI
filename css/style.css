@@ -299,3 +299,6 @@ details a { color: oklch(45% 0.12 245); }
   .footer { margin-top: 44px; padding: 26px var(--gutter); }
   .copy { font-size: 12px; }
 }
+
+/* iOS: niente collegamenti automatici su indirizzi e nomi */
+a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; pointer-events: none; }
