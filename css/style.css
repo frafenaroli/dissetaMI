@@ -124,25 +124,29 @@ button { font-family: inherit; }
 .pill.outline.small { background: var(--color-surface-glass); backdrop-filter: blur(14px); }
 
 /* Filtri */
-.barra { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 18px var(--gutter) 0; }
-.filtri { display: flex; gap: 8px; flex-wrap: wrap; }
+/* Filtri in overlay sulla mappa, a sinistra dei pulsanti */
+.filtri {
+  position: absolute; top: 12px; left: 12px; z-index: 500; max-width: calc(100% - 76px);
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.mappa-card.schermo-intero .filtri { top: calc(12px + env(safe-area-inset-top)); }
 .chip {
-  position: relative; display: inline-flex; align-items: center; gap: 7px; cursor: pointer; user-select: none;
-  padding: 8px 14px; border-radius: var(--radius-pill); font: 600 12.5px var(--font-sans);
-  border: 1.5px solid; transition: opacity 0.15s;
+  position: relative; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none;
+  padding: 7px 12px; border-radius: var(--radius-pill); font: 600 12px var(--font-sans);
+  border: 1.5px solid; transition: opacity 0.15s; box-shadow: var(--shadow-soft); backdrop-filter: blur(10px);
 }
 .chip input { position: absolute; opacity: 0; pointer-events: none; }
 .chip small { font-weight: 500; opacity: 0.75; }
-.chip-vedovelle { background: oklch(95% 0.04 155); border-color: oklch(86% 0.07 155); color: oklch(38% 0.1 155); }
-.chip-case { background: oklch(95% 0.03 250); border-color: oklch(86% 0.06 250); color: oklch(40% 0.12 255); }
-.chip:has(input:not(:checked)) { background: transparent; border-color: var(--color-border); color: var(--color-text-quiet); }
+.chip-vedovelle { background: oklch(95% 0.04 155 / 0.92); border-color: oklch(86% 0.07 155); color: oklch(38% 0.1 155); }
+.chip-case { background: oklch(95% 0.03 250 / 0.92); border-color: oklch(86% 0.06 250); color: oklch(40% 0.12 255); }
+.chip:has(input:not(:checked)) { background: var(--color-surface-glass-strong); border-color: var(--color-border); color: var(--color-text-quiet); }
 .chip:has(input:not(:checked)) .dot { background: transparent; }
 .chip:has(input:focus-visible) { outline: 2px solid oklch(70% 0.1 230); outline-offset: 2px; }
 .dot { width: 9px; height: 9px; border-radius: 50%; border: 2px solid currentColor; background: currentColor; }
 
 /* Mappa */
 .mappa-card {
-  position: relative; margin: 16px var(--gutter) 0; height: 62vh; min-height: 380px; max-height: 640px;
+  position: relative; margin: 20px var(--gutter) 0; height: 66vh; min-height: 380px; max-height: 640px;
   border-radius: 22px; overflow: hidden; border: 1px solid var(--color-border-glass);
   box-shadow: var(--shadow-soft); background: oklch(94% 0.01 70); scroll-margin-top: 16px;
 }
@@ -288,7 +292,7 @@ details a { color: oklch(45% 0.12 245); }
   .input-row input { font-size: 14.5px; }
   .button-row { display: contents; }
   .button-row > * { flex: none; }
-  .mappa-card { height: 580px; border-radius: 26px; }
+  .mappa-card { height: 640px; border-radius: 26px; }
   .footer { margin-top: 44px; padding: 26px var(--gutter); }
   .copy { font-size: 12px; }
 }

@@ -115,6 +115,11 @@
     const p = document.createElement('p');
     p.innerHTML = risposta;
     d.append(s, p);
+    // Una voce aperta alla volta: aprendone una si chiudono le altre.
+    d.addEventListener('toggle', () => {
+      if (!d.open) return;
+      $('scopri-corpo').querySelectorAll('details[open]').forEach((altra) => { if (altra !== d) altra.open = false; });
+    });
     return d;
   }
 
