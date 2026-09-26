@@ -229,6 +229,26 @@ body.bloccato { overflow: hidden; }
 .popup.vedovelle .meta-row { color: oklch(42% 0.1 155); }
 .popup.case .meta-row { color: oklch(45% 0.12 255); }
 
+/* Immagine in cima alla scheda del punto (segnaposto finché non c'è la foto) */
+.popup-img {
+  position: relative; height: 168px; display: flex; align-items: center; justify-content: center; overflow: hidden;
+  background: linear-gradient(135deg, oklch(92% 0.06 150), oklch(91% 0.05 195));
+}
+.popup.case .popup-img { background: linear-gradient(135deg, oklch(92% 0.045 230), oklch(91% 0.05 285)); }
+.popup-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.popup-img .segnaposto { color: oklch(100% 0 0 / 0.85); stroke-width: 1.5; }
+.popup-img img:not([hidden]) + .segnaposto { display: none; }
+#scheda .close-btn {
+  top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 50%;
+  background: var(--color-surface-glass-strong); backdrop-filter: blur(10px); box-shadow: var(--shadow-glass);
+}
+#scheda .popup-top { padding-top: 20px; }
+#scheda .popup-top .tags { padding-right: 0; }
+.link-info {
+  display: inline-flex; align-items: center; gap: 6px; border: none; background: none; cursor: pointer; padding: 4px 8px;
+  font: 600 12.5px var(--font-sans); color: var(--color-text-soft); text-decoration: underline; text-underline-offset: 3px;
+}
+
 /* Finestra "Scopri di più e FAQ" */
 .popup-ampio { max-width: 620px; max-height: calc(100vh - 40px); max-height: calc(100dvh - 40px); display: flex; flex-direction: column; }
 .popup-ampio .popup-top { padding-bottom: 14px; }
@@ -252,14 +272,9 @@ body.bloccato { overflow: hidden; }
   display: flex; align-items: center; gap: 7px; margin: 6px 0 10px;
   font: 600 11px var(--font-sans); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-quiet);
 }
-.curiosita { list-style: none; margin: 0 0 22px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-.curiosita li { padding: 12px 14px; border-radius: 16px; background: oklch(97% 0.012 70); border: 1px solid var(--color-border-soft); }
-.tab-vedovelle .curiosita li { background: oklch(97% 0.025 155); border-color: oklch(91% 0.04 155); }
-.tab-case .curiosita li { background: oklch(97% 0.02 250); border-color: oklch(91% 0.035 250); }
-.curiosita b { display: block; font: 600 15px/1.35 var(--font-serif); color: var(--color-text); margin-bottom: 3px; }
-.curiosita span { font: 400 13px/1.6 var(--font-sans); color: var(--color-text-muted); }
 details { border-top: 1px solid var(--color-border); }
-details:last-child { border-bottom: 1px solid var(--color-border); }
+details:last-child, details:has(+ .scopri-sez) { border-bottom: 1px solid var(--color-border); }
+details + .scopri-sez { margin-top: 24px; }
 summary {
   cursor: pointer; padding: 13px 0; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 12px;
   font: 600 15px/1.35 var(--font-serif); color: var(--color-text);

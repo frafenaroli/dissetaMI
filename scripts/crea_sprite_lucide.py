@@ -16,7 +16,7 @@ from pathlib import Path
 ICONE = [
     "search", "x", "map-pin", "locate-fixed", "navigation", "clock", "droplet", "glass-water",
     "book-open", "circle-help", "maximize-2", "minimize-2", "languages", "arrow-up-right",
-    "chevron-down", "plus", "minus", "sparkles", "info",
+    "chevron-down", "plus", "minus", "sparkles", "info", "footprints", "image",
 ]
 OUT = Path(__file__).resolve().parent.parent / "vendor" / "lucide" / "sprite.svg"
 

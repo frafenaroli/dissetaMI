@@ -13,6 +13,10 @@
     info: { desc: 'intro', curiosita: ['falda'], faq: ['s1', 's2', 's3', 's4'] },
   };
 
+  // Immagine in cima alla scheda del punto: percorso del file (es. 'img/vedovella.jpg').
+  // Finché è vuoto la scheda mostra un segnaposto colorato con l'icona della categoria.
+  const IMMAGINI = { vedovelle: '', case: '' };
+
   const $ = (id) => document.getElementById(id);
   const SPRITE = 'vendor/lucide/sprite.svg#';
   const stato = { dati: null, livelli: {}, io: null, pinIo: null, pinCerca: null, selezionato: null, evidenza: null, tabScopri: 'vedovelle' };
@@ -94,32 +98,25 @@
     const h1 = document.createElement('h3');
     h1.className = 'scopri-sez';
     h1.append(icona('sparkles', 14), t('sez.curiosita'));
-    const lista = document.createElement('ul');
-    lista.className = 'curiosita';
-    c.curiosita.forEach((k) => {
-      const li = document.createElement('li');
-      const b = document.createElement('b');
-      b.textContent = t(`an.${k}.t`);
-      const p = document.createElement('span');
-      p.textContent = t(`an.${k}.d`);
-      li.append(b, p);
-      lista.appendChild(li);
-    });
-    corpo.append(h1, lista);
+    corpo.appendChild(h1);
+    c.curiosita.forEach((k) => corpo.appendChild(tendina(t(`an.${k}.t`), t(`an.${k}.d`))));
 
     const h2 = document.createElement('h3');
     h2.className = 'scopri-sez';
     h2.append(icona('circle-help', 14), t('sez.faq'));
     corpo.appendChild(h2);
-    c.faq.forEach((id) => {
-      const d = document.createElement('details');
-      const s = document.createElement('summary');
-      s.append(document.createTextNode(t(`faq.${id}.q`)), icona('chevron-down', 18));
-      const p = document.createElement('p');
-      p.innerHTML = t(`faq.${id}.a`); // testi nostri, possono contenere link
-      d.append(s, p);
-      corpo.appendChild(d);
-    });
+    c.faq.forEach((id) => corpo.appendChild(tendina(t(`faq.${id}.q`), t(`faq.${id}.a`))));
+  }
+
+  // Voce a tendina (curiosità e FAQ). Il testo è nostro e può contenere link.
+  function tendina(domanda, risposta) {
+    const d = document.createElement('details');
+    const s = document.createElement('summary');
+    s.append(document.createTextNode(domanda), icona('chevron-down', 18));
+    const p = document.createElement('p');
+    p.innerHTML = risposta;
+    d.append(s, p);
+    return d;
   }
 
   function apriScopri(tab) {
@@ -131,7 +128,12 @@
   }
   function chiudiScopri() { $('scopri').hidden = true; }
 
-  $('btn-scopri').addEventListener('click', () => apriScopri());
+  $('footer-info').addEventListener('click', () => apriScopri('info'));
+  $('scheda-scopri').addEventListener('click', () => {
+    const tipo = stato.selezionato && stato.selezionato.tipo;
+    chiudiScheda();
+    apriScopri(tipo);
+  });
   $('scopri-chiudi').addEventListener('click', chiudiScopri);
   $('scopri').addEventListener('click', (e) => { if (e.target === $('scopri')) chiudiScopri(); });
   $('scopri-tabs').addEventListener('click', (e) => {
@@ -267,7 +269,11 @@
 
     const dest = `${punto.lat},${punto.lng}`;
     $('scheda-indicazioni').href = `https://www.google.com/maps/dir/?api=1&destination=${dest}&travelmode=walking`;
-    $('scheda-maps').href = `https://www.google.com/maps/search/?api=1&query=${dest}`;
+    const img = $('scheda-img');
+    const foto = img.querySelector('img');
+    foto.hidden = !IMMAGINI[tipo];
+    if (IMMAGINI[tipo]) foto.src = IMMAGINI[tipo];
+    img.querySelector('use').setAttribute('href', SPRITE + (tipo === 'case' ? 'glass-water' : 'droplet'));
     $('scheda').hidden = false;
 
     if (stato.evidenza) stato.evidenza.remove();

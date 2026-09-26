@@ -4,7 +4,7 @@ Una mappa interattiva di vedovelle e case dell'acqua di Milano.
 
 - Trova il punto più vicino con la geolocalizzazione, oppure cercando un indirizzo o un quartiere.
 - Apri le indicazioni a piedi in Google Maps.
-- Leggi curiosità e FAQ nella finestra "Scopri di più e FAQ".
+- Leggi curiosità e FAQ con "Scopri di più" nella scheda di ogni punto, o da "Info e FAQ" in fondo alla pagina.
 - Allarga la mappa a tutto schermo.
 - Si installa come app (PWA) e i punti restano consultabili offline.
 - In italiano e in inglese (testi in `js/i18n.js`).
@@ -36,3 +36,7 @@ e apri http://localhost:8000.
 ## Pubblicazione
 
 Ogni push su `main` pubblica il sito su GitHub Pages tramite `.github/workflows/deploy.yml`. In **Settings → Pages** la sorgente deve essere **GitHub Actions**.
+
+## Immagini della scheda
+
+La scheda di ogni punto ha in alto lo spazio per un'immagine per categoria. Per aggiungerle, metti i file in `img/` e indica i percorsi in `IMMAGINI` all'inizio di `js/app.js` (es. `vedovelle: 'img/vedovella.jpg'`). Finché sono vuoti si vede un segnaposto colorato.
