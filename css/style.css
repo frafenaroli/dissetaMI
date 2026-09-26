@@ -294,7 +294,7 @@ details a { color: oklch(45% 0.12 245); }
   .input-row { flex: 1; min-width: 260px; max-width: 480px; padding: 15px 22px; margin-bottom: 0; }
   .input-row input { font-size: 14.5px; }
   .button-row { display: contents; }
-  .button-row > * { flex: none; }
+  .button-row > * { flex: none; align-self: stretch; padding-inline: 22px; }
   .mappa-card { height: 640px; border-radius: 26px; }
   .footer { margin-top: 44px; padding: 26px var(--gutter); }
   .copy { font-size: 12px; }

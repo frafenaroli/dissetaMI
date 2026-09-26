@@ -4,7 +4,7 @@
  * - tile della mappa e ricerca indirizzi: solo rete.
  * Cambiare VERSION quando si modificano i file del sito.
  */
-const VERSION = 'v11';
+const VERSION = 'v12';
 const SHELL = `dissetami-shell-${VERSION}`;
 const DATI = `dissetami-dati-${VERSION}`;
 
@@ -27,7 +27,13 @@ const SHELL_FILES = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(SHELL).then((c) => c.addAll(SHELL_FILES)).then(() => self.skipWaiting()));
+  // I dati entrano subito in cache: alla prima visita la pagina li scarica prima che il SW sia attivo.
+  event.waitUntil(
+    Promise.all([
+      caches.open(SHELL).then((c) => c.addAll(SHELL_FILES)),
+      caches.open(DATI).then((c) => c.add('./data/punti.json')),
+    ]).then(() => self.skipWaiting()),
+  );
 });
 
 self.addEventListener('activate', (event) => {
