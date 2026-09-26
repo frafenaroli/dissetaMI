@@ -15,6 +15,7 @@ import argparse
 import csv
 import io
 import json
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -61,6 +62,28 @@ def decodifica(raw):
     return raw.decode("latin-1")
 
 
+MINUSCOLE = {"di", "del", "della", "delle", "degli", "dei", "in", "il", "sul", "e"}
+SOSTITUZIONI = {"Q.Re": "Q.re", "P.Ta": "P.ta", "Pta": "P.ta", "Qt": "QT"}
+ACCENTI = {"a'": "à", "e'": "è", "i'": "ì", "o'": "ò", "u'": "ù"}
+
+
+def nome_quartiere(nil):
+    """'CITTA\' STUDI' -> 'Città Studi', 'BAGGIO - Q.RE DEGLI OLMI' -> 'Baggio - Q.re degli Olmi'."""
+    parole = []
+    for i, parola in enumerate(nil.strip().split()):
+        if re.fullmatch(r"[IVXLC]+", parola) and parola.lower() not in MINUSCOLE:  # es. XXII Marzo
+            parole.append(parola)
+            continue
+        w = parola.lower()
+        if len(w) > 3 and w[-2:] in ACCENTI:  # Citta' -> Città, ma Ca' resta
+            w = w[:-2] + ACCENTI[w[-2:]]
+        if i == 0 or w not in MINUSCOLE:
+            w = w[:1].upper() + w[1:]
+            w = re.sub(r"\.(\w)", lambda m: "." + m.group(1).upper(), w)
+        parole.append(SOSTITUZIONI.get(w, w))
+    return " ".join(parole)
+
+
 def leggi(testo, tipo):
     punti, scartati = [], 0
     for riga in csv.DictReader(io.StringIO(testo), delimiter=";"):
@@ -77,7 +100,7 @@ def leggi(testo, tipo):
             "id": riga.get("objectID", "").strip(),
             "lat": round(lat, 6),
             "lng": round(lng, 6),
-            "nil": (riga.get("NIL") or "").strip().title(),
+            "nil": nome_quartiere(riga.get("NIL") or ""),
             "mun": (riga.get("MUNICIPIO") or "").strip(),
             "cap": (riga.get("CAP") or "").strip(),
         })
