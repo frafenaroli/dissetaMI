@@ -80,9 +80,9 @@ button { font-family: inherit; }
 .hero em { font-style: italic; }
 
 /* Ricerca */
-.search { position: relative; padding: 30px var(--gutter) 0; }
+.search { position: relative; z-index: 10; padding: 30px var(--gutter) 0; }
 .input-row {
-  position: relative; display: flex; align-items: center; gap: 10px;
+  position: relative; z-index: 2; display: flex; align-items: center; gap: 10px;
   background: var(--color-surface-glass); backdrop-filter: blur(16px);
   border: 1px solid var(--color-border-glass); border-radius: var(--radius-pill);
   padding: 14px 18px; box-shadow: var(--shadow-soft); margin-bottom: 12px; color: var(--color-text-soft);
@@ -146,7 +146,7 @@ button { font-family: inherit; }
 
 /* Mappa */
 .mappa-card {
-  position: relative; margin: 20px var(--gutter) 0; height: 66vh; min-height: 380px; max-height: 640px;
+  position: relative; z-index: 0; margin: 20px var(--gutter) 0; height: 66vh; min-height: 380px; max-height: 640px;
   border-radius: 22px; overflow: hidden; border: 1px solid var(--color-border-glass);
   box-shadow: var(--shadow-soft); background: oklch(94% 0.01 70); scroll-margin-top: 16px;
 }
