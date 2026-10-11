@@ -1,10 +1,11 @@
 /* DissetaMI service worker, scritto a mano e senza dipendenze.
- * - navigazioni e data/punti.json: prima la rete, poi la cache (dati sempre freschi se c'è connessione);
- * - file statici del sito (Leaflet incluso) e Google Fonts: stale-while-revalidate;
+ * - navigazioni, file del sito (Leaflet incluso) e data/punti.json: prima la rete, poi la cache,
+ *   così HTML, CSS e JS arrivano sempre della stessa versione quando c'è connessione;
+ * - Google Fonts: stale-while-revalidate;
  * - tile della mappa e ricerca indirizzi: solo rete.
  * Cambiare VERSION quando si modificano i file del sito.
  */
-const VERSION = 'v17';
+const VERSION = 'v18';
 const SHELL = `dissetami-shell-${VERSION}`;
 const DATI = `dissetami-dati-${VERSION}`;
 
@@ -81,6 +82,6 @@ self.addEventListener('fetch', (event) => {
   } else if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
     event.respondWith(staleWhileRevalidate(request));
   } else if (url.origin === self.location.origin) {
-    event.respondWith(staleWhileRevalidate(request));
+    event.respondWith(primaRete(request, SHELL));
   }
 });
