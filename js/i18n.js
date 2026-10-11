@@ -43,6 +43,8 @@ window.TESTI = {
     'scheda.vai': 'Portami qui!',
     'scheda.scopri': 'Scopri di più',
     'footer.info': 'Info e FAQ',
+    'sorella.titolo': 'Hai sete di cultura?',
+    'sorella.desc': 'Con MostraMI scopri mostre, musei e gallerie aperti a Milano.',
     'chiudi': 'Chiudi',
 
     'avviso.noDati': 'I dati non sono ancora disponibili.',
@@ -145,6 +147,8 @@ window.TESTI = {
     'scheda.vai': 'Take me there!',
     'scheda.scopri': 'Learn more',
     'footer.info': 'Info & FAQ',
+    'sorella.titolo': 'Thirsty for culture?',
+    'sorella.desc': 'MostraMI shows you the exhibitions, museums and galleries open in Milan.',
     'chiudi': 'Close',
 
     'avviso.noDati': 'Data is not available yet.',
